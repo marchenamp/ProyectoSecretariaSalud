@@ -1,3 +1,5 @@
+controlador\Expedientes.class
+controlador\Citas.class
 modelo\Permiso.class
 modelo\Cita.class
 controlador\ConsultasMedico.class
@@ -6,11 +8,13 @@ modelo\AccionMedico.class
 controlador\Conexion.class
 controlador\ConsultasExpediente.class
 controlador\ConsultasTutor.class
+controlador\Tutores.class
 modelo\AccionPaciente.class
 modelo\EstadoCivil.class
 modelo\Medico.class
 modelo\AccionExpediente.class
 modelo\Paciente.class
+controlador\Permisos.class
 controlador\ConsultasArchivos.class
 modelo\Tutor.class
 controlador\AuthenticationControllerProvider.class
@@ -22,6 +26,8 @@ controlador\ServletExpediente.class
 modelo\Genero.class
 modelo\Archivo.class
 controlador\CerrarSesion.class
+controlador\service\ApplicationConfig.class
+controlador\Medicos.class
 controlador\ServletMedico.class
 controlador\CallbackServlet.class
 controlador\HomeServlet.class
@@ -33,3 +39,4 @@ modelo\AccionCita.class
 modelo\Expediente.class
 controlador\ServletCita.class
 controlador\LoginServlet.class
+controlador\Pacientes.class
