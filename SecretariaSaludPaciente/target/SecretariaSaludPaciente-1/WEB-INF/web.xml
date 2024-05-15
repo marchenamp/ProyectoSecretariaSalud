@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>IniciarSesion</servlet-name>
+        <servlet-class>controlador.IniciarSesion</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IniciarSesion</servlet-name>
+        <url-pattern>/IniciarSesion</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <context-param>
+        <param-name>com.auth0.domain</param-name>
+        <param-value>dev-2ehai42dgu81hkog.us.auth0.com</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.auth0.clientId</param-name>
+        <param-value>RMTEqgP7CadFfBD4ehbOdfGiKHcZzQid</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.auth0.clientSecret</param-name>
+        <param-value>ivD3S2KOPf6KNVR89vhMkvsUe3oZmqzeKjxzv-0cl0TCIBN0GjHcbLNqRwvWxBNc</param-value>
+    </context-param>
+</web-app>
