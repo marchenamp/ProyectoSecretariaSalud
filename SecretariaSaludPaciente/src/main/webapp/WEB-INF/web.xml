@@ -13,16 +13,11 @@
             30
         </session-timeout>
     </session-config>
-    <context-param>
-        <param-name>com.auth0.domain</param-name>
-        <param-value>dev-2ehai42dgu81hkog.us.auth0.com</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.auth0.clientId</param-name>
-        <param-value>RMTEqgP7CadFfBD4ehbOdfGiKHcZzQid</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.auth0.clientSecret</param-name>
-        <param-value>ivD3S2KOPf6KNVR89vhMkvsUe3oZmqzeKjxzv-0cl0TCIBN0GjHcbLNqRwvWxBNc</param-value>
-    </context-param>
+    <resource-ref>
+        <description>MySQL DataSource</description>
+        <res-ref-name>jdbc/MySQLResource</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
 </web-app>

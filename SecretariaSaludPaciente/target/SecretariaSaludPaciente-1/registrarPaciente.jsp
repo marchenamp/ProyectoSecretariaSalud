@@ -131,33 +131,33 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="nombreTutor">Nombre(s):</label>
-                                    <input type="text" name="nombreTutor" placeholder="Ingrese lo(s) nombre(s) del tutor" onkeypress="return soloLetras(event)" title="Ingrese únicamente letras" maxlength="255" required>
+                                    <input type="text" name="nombreTutor" placeholder="Ingrese lo(s) nombre(s) del tutor" onkeypress="return soloLetras(event)" title="Ingrese únicamente letras" maxlength="255" >
                                 </div>
                                 <div class="col">
                                     <label for="apellidoPaternoTutor">Apellido Paterno:</label>
-                                    <input type="text" name="apellidoPaternoTutor" placeholder="Ingrese el apellido paterno del tutor" onkeypress="return soloLetras(event)" maxlength="255" required>
+                                    <input type="text" name="apellidoPaternoTutor" placeholder="Ingrese el apellido paterno del tutor" onkeypress="return soloLetras(event)" maxlength="255" >
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
                                     <label for="apellidoMaternoTutor">Apellido Materno:</label>
-                                    <input type="text" name="apellidoMaternoTutor" placeholder="Ingrese el apellido materno del tutor" onkeypress="return soloLetras(event)" maxlength="255" required>
+                                    <input type="text" name="apellidoMaternoTutor" placeholder="Ingrese el apellido materno del tutor" onkeypress="return soloLetras(event)" maxlength="255" >
                                 </div>
                                 <div class="col">
                                     <label for="fechaNacimientoTutor">Fecha de Nacimiento:</label>
-                                    <input name="fechaNacimientoTutor" type="date" id="fechaTutor" class="form-control" id="fecha" required>
+                                    <input name="fechaNacimientoTutor" type="date" id="fechaTutor" class="form-control" id="fecha" >
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
                                     <label for="telefonoTutor">Teléfono:</label>
-                                    <input type="tel" name="telefonoTutor" placeholder="Ingrese el número telefónico de su tutor" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Ingrese solo números (máximo 10 dígitos)" required>
+                                    <input type="tel" name="telefonoTutor" placeholder="Ingrese el número telefónico de su tutor" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Ingrese solo números (máximo 10 dígitos)" >
                                 </div>
                                 <div class="col">
                                     <label for="generoTutor">Género:</label>
-                                    <select id="generoTutor" name="generoTutor" required>
+                                    <select id="generoTutor" name="generoTutor" >
                                         <option value="seleccione">Seleccione el género de su tutor</option>
                                         <option value="FEMENINO">Femenino</option>
                                         <option value="MASCULINO">Masculino</option>
@@ -168,7 +168,7 @@
 
                             <div class="row">
                                 <label for="parentesco">Parentesco:</label>
-                                <select id="parentesco" name="parentescoTutor" required>
+                                <select id="parentesco" name="parentescoTutor" >
                                     <option value="seleccione">Seleccione el parentesco con el tutor</option>
                                     <option value="Madre">Madre</option>
                                     <option value="Padre">Padre</option>

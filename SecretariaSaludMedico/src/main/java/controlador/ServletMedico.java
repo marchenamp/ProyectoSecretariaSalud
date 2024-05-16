@@ -100,6 +100,7 @@ public class ServletMedico extends HttpServlet {
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                     .replyTo(confirmationQueueName) // Establecer la cola de respuesta
                     .correlationId("1") // ID de correlación para identificar la respuesta
+                    .expiration("60000") // Caducidad de 60 segundos
                     .build();
 
             // Publica el mensaje en el intercambio

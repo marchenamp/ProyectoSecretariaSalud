@@ -38,7 +38,7 @@ import modelo.Expediente;
 @MultipartConfig
 public class ServletExpediente extends HttpServlet {
 
-    private static final String EXCHANGE_NAME = "expedientes";
+    private String EXCHANGE_NAME = "expedientes";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,10 +61,12 @@ public class ServletExpediente extends HttpServlet {
         String botonRegistrar = request.getParameter("RegistrarExpediente");
         String botonEditar = request.getParameter("EditarExpediente");
         String botonAgregarArchivo = request.getParameter("AgregarArchivo");
+        System.out.println(botonAgregarArchivo);
+        
         String botonEliminarArchivo = request.getParameter("EliminarArchivo");
 
         if (botonAgregarArchivo != null || botonEliminarArchivo != null) {
-
+            EXCHANGE_NAME = "archivos";
             Archivo archivo = null;
 
             try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
@@ -79,6 +81,7 @@ public class ServletExpediente extends HttpServlet {
                 if (botonAgregarArchivo != null) {
 
                     String cadenaIdExpediente = request.getParameter("idExpediente");
+                    System.out.println(cadenaIdExpediente);
                     cadenaIdExpediente = cadenaIdExpediente.trim();
                     cadenaIdExpediente = cadenaIdExpediente.replace("\n", "");
                     int idExpediente = Integer.parseInt(cadenaIdExpediente);
@@ -110,6 +113,7 @@ public class ServletExpediente extends HttpServlet {
                 AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                         .replyTo(confirmationQueueName) // Establecer la cola de respuesta
                         .correlationId("1") // ID de correlación para identificar la respuesta
+                        .expiration("60000") // Caducidad de 60 segundos
                         .build();
 
                 // Publica el mensaje en el intercambio

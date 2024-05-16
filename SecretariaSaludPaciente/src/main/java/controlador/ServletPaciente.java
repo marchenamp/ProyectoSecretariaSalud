@@ -60,6 +60,7 @@ public class ServletPaciente extends HttpServlet {
         factory.setHost("localhost");
 
         String botonRegistrar = request.getParameter("RegistrarPaciente");
+        System.out.println(botonRegistrar);
 
         SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -141,6 +142,7 @@ public class ServletPaciente extends HttpServlet {
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                     .replyTo(confirmationQueueName) // Establecer la cola de respuesta
                     .correlationId("1") // ID de correlación para identificar la respuesta
+                    .expiration("60000") // Caducidad de 60 segundos
                     .build();
 
             // Publica el mensaje en el intercambio
@@ -163,7 +165,7 @@ public class ServletPaciente extends HttpServlet {
             } else {
                 request.setAttribute("txt-exito", "Registro de paciente fallido");
             }
-            RequestDispatcher rd = request.getRequestDispatcher("indexPaciente.jsp");
+            RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
             rd.forward(request, response);
         }
     }

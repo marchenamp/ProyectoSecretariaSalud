@@ -8,95 +8,200 @@ package controlador;
  *
  * @author Hiram
  */
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import modelo.Archivo;
 
 public class ConsultasArchivos extends Conexion {
 
     public ConsultasArchivos() {
     }
 
-    // Método para registrar un archivo adjunto
-    public boolean registrarArchivo(int idExpediente, String nombreArchivo, String tipoArchivo, byte[] datos) {
+    public boolean registraArchivo(int idExpediente, String nombre, String tipo, InputStream contenido) {
         PreparedStatement pst = null;
+
         try {
-            String consulta = "INSERT INTO archivos_adjuntos (id_expediente, nombre_archivo, tipo_archivo, datos) VALUES (?, ?, ?, ?)";
+            String consulta = "INSERT INTO archivos (id_expediente, nombre, tipo, contenido) VALUES (?, ?, ?, ?)";
             pst = getConexion().prepareStatement(consulta);
             pst.setInt(1, idExpediente);
-            pst.setString(2, nombreArchivo);
-            pst.setString(3, tipoArchivo);
-            pst.setBytes(4, datos);
+            pst.setString(2, nombre);
+            pst.setString(3, tipo);
+            pst.setBlob(4, contenido);
 
-            return pst.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            System.err.println("Error al registrar archivo: " + e);
-        } finally {
-            try {
-                if (pst != null) {
-                    pst.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar PreparedStatement: " + e);
+            if (pst.executeUpdate() == 1) {
+                return true;
             }
+        } catch (Exception e) {
+            System.err.println("Error en: " + e);
+        } finally {
+//            try {
+//                if (getConexion() != null) {
+//                    getConexion().close();
+//                }
+//                if (pst != null) {
+//                    pst.close();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Error en: " + e);
+//            }
         }
         return false;
     }
 
-    // Método para eliminar un archivo adjunto de un expediente en la base de datos
-    public boolean eliminarArchivo(int idExpediente, String nombreArchivo) {
+    public boolean eliminarArchivo(int idArchivo) {
         PreparedStatement pst = null;
+
         try {
-            String consulta = "DELETE FROM archivos_adjuntos WHERE id_expediente = ? AND nombre_archivo = ?";
+            String consulta = "DELETE FROM archivos WHERE id_archivo = ?";
             pst = getConexion().prepareStatement(consulta);
-            pst.setInt(1, idExpediente);
-            pst.setString(2, nombreArchivo);
+            pst.setInt(1, idArchivo);
 
-            return pst.executeUpdate() == 1; // Retorna true si se eliminó un registro (archivo)
-
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar el archivo del expediente: " + e);
-        } finally {
-            try {
-                if (pst != null) {
-                    pst.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar PreparedStatement: " + e);
+            if (pst.executeUpdate() == 1) {
+                return true;
             }
+        } catch (Exception e) {
+            System.err.println("Error en: " + e);
+        } finally {
+//            try {
+//                if (getConexion() != null) {
+//                    getConexion().close();
+//                }
+//                if (pst != null) {
+//                    pst.close();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Error en: " + e);
+//            }
         }
         return false;
     }
-    // Método para verificar si un archivo ya está asociado a un expediente en la base de datos
-    public boolean archivoExistente(int idExpediente, String nombreArchivo) {
+
+    public Archivo obtenerArchivoPorId(int idArchivo) throws IOException {
         PreparedStatement pst = null;
         ResultSet rs = null;
+        Archivo archivo = null;
+
         try {
-            String consulta = "SELECT id_archivo FROM archivos_adjuntos WHERE id_expediente = ? AND nombre_archivo = ?";
+            String consulta = "SELECT id_expediente, nombre, tipo, contenido FROM archivos WHERE id_archivo = ?";
             pst = getConexion().prepareStatement(consulta);
-            pst.setInt(1, idExpediente);
-            pst.setString(2, nombreArchivo);
+            pst.setInt(1, idArchivo);
             rs = pst.executeQuery();
 
-            return rs.next(); // Retorna true si hay al menos un resultado (archivo encontrado)
+            if (rs.next()) {
+                int idExpediente = rs.getInt("id_expediente");
+                String nombre = rs.getString("nombre");
+                String tipo = rs.getString("tipo");
+                InputStream contenidoStream = rs.getBinaryStream("contenido");
 
+                archivo = new Archivo(idArchivo, idExpediente, nombre, tipo, contenidoStream);
+            }
         } catch (SQLException e) {
-            System.err.println("Error al verificar si el archivo ya existe en el expediente: " + e);
+            System.err.println("Error al obtener archivo por id: " + e);
+        } finally {
+//            try {
+//                if (getConexion() != null) {
+//                    getConexion().close();
+//                }
+//                if (pst != null) {
+//                    pst.close();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Error en: " + e);
+//            }
+        }
+
+        return archivo;
+    }
+
+    public List<Archivo> obtenerArchivosPorExpediente(int idExpediente) throws IOException {
+        List<Archivo> archivos = new ArrayList<>();
+
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        try {
+            String consulta = "SELECT id_archivo, nombre, tipo, contenido FROM archivos WHERE id_expediente = ?";
+            pst = getConexion().prepareStatement(consulta);
+            pst.setInt(1, idExpediente);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                int idArchivo = rs.getInt("id_archivo");
+                String nombre = rs.getString("nombre");
+                String tipo = rs.getString("tipo");
+                InputStream contenidoStream = rs.getBinaryStream("contenido");
+
+                archivos.add(new Archivo(idArchivo, idExpediente, nombre, tipo, contenidoStream));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener archivos por expediente: " + e);
+        } finally {
+//            try {
+//                if (getConexion() != null) {
+//                    getConexion().close();
+//                }
+//                if (pst != null) {
+//                    pst.close();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Error en: " + e);
+//            }
+        }
+
+        return archivos;
+    }
+
+    private byte[] obtenerBytesDesdeInputStream(InputStream inputStream) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int bytesRead = -1;
+
+        try {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            System.err.println("Error al obtener bytes desde InputStream: " + e);
         } finally {
             try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (pst != null) {
-                    pst.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar ResultSet o PreparedStatement: " + e);
+                outputStream.close();
+            } catch (Exception e) {
+                System.err.println("Error al cerrar outputStream: " + e);
             }
         }
-        return false;
-    }
-    
-}
 
+        return null;
+    }
+
+    public String obtenerTablaArchivos(int idExpediente) throws IOException {
+        String htmlcode = "";
+        for (Archivo archivo : obtenerArchivosPorExpediente(idExpediente)) {
+            htmlcode
+                    += "   <tr>\n"
+                    + "       <td>" + archivo.getNombre() + "</td>\n"
+                    + "       <td>" + archivo.getTipo() + "</td>\n"
+                    + "       <td class=\"celda-btn\">\n"
+                    + "            <button id=\"ver-btn\" onclick=\"verArchivo(" + archivo.getId() + ")\">Ver</button>\n"
+                    + "       </td>\n"
+                    + "       <td>\n"
+                    + "            <form id=\"delete\" action=\"ServletExpediente\" method=\"post\">\n"
+                    + "                 <input type=\"hidden\" name=\"idArchivoEliminar\" id=\"idArchivoEliminarInput\" value=\"" + archivo.getId() + "\">\n"
+                    + "                 <button class=\"eliminar-btn\" name=\"EliminarArchivo\"> \n"
+                    + "                     <img src=\"IMG/eliminar.png\" alt=\"eliminar\" id=\"eliminar-icon\"/>\n"
+                    + "                 </button>\n"
+                    + "            </form>\n"
+                    + "       </td>\n"
+                    + "    </tr>";
+
+        }
+        return htmlcode;
+    }
+
+}

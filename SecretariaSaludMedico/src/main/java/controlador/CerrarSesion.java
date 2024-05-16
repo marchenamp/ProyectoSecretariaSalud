@@ -32,30 +32,15 @@ public class CerrarSesion extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try (PrintWriter out = response.getWriter()) {
-            HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false); // No crea una nueva sesión si no existe
 
-            // Obtiene el id de la sesión
-            String cadenaId = (String) session.getAttribute("id");
-            cadenaId = cadenaId.trim();
-            cadenaId = cadenaId.replace("\n", "");
-            int id = Integer.parseInt(cadenaId);
-            ConsultasPaciente sql = new ConsultasPaciente();
-
-            if (id != 0 && sql.buscarPaciente(id) != null) {
-                // Elimina el correo e id de la sesión
-                session.removeAttribute("correo");
-                session.removeAttribute("id");
-
-                // Redirige a la página de inicio
-                response.sendRedirect("index.jsp");
-            } else {
-                request.setAttribute("txt-advertencia", "No fue posible cerrar sesión");
-                RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
-                rd.forward(request, response);
-            }
+        if (session != null) {
+            session.invalidate(); // Invalida la sesión actual y elimina todos los atributos asociados
+            response.sendRedirect("index.jsp"); // Redirige a la página de inicio
+        } else {
+            request.setAttribute("txt-advertencia", "No hay sesión activa para cerrar");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

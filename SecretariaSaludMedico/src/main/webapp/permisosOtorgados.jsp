@@ -4,14 +4,44 @@
     Author     : magda
 --%>
 
+<%@page import="io.jsonwebtoken.JwtException"%>
+<%@page import="io.jsonwebtoken.Claims"%>
+<%@page import="io.jsonwebtoken.Jwts"%>
+<%@page import="io.jsonwebtoken.Jwts"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="controlador.ConsultasCita" %>
 <% ConsultasCita cc = new ConsultasCita(); %>
 <%
-    HttpSession objSesion = request.getSession(false);
-    String medico = (String) objSesion.getAttribute("nombres");
-    String correo = (String) objSesion.getAttribute("correo");
-    String idMedico = (String) objSesion.getAttribute("id");
+    String token = (String) session.getAttribute("token");
+    String medico = null;
+    String correo = null;
+    String idMedico = null;
+    System.out.println("Initializes token");
+    System.out.println(token);
+    System.out.println("Finishes token");
+
+    boolean isTokenValid = true;
+
+    if (token != null) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey("2bb80a5ff92fefff0d3fc3e46fd8f5e2a63d78377757c713f4a3e6e11e78c9a5a553891de4f598a6f0f6a2854e23bcb8b286e069e7c5d7d60c03441c0e285383")
+                    .parseClaimsJws(token)
+                    .getBody();
+            medico = (String) claims.get("nombres");
+            correo = (String) claims.get("correo");
+            idMedico = String.valueOf(claims.get("id"));
+        } catch (JwtException e) {
+            isTokenValid = false;
+        }
+    } else {
+        isTokenValid = false;
+    }
+
+    if (!isTokenValid) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -38,7 +68,7 @@
                     <% out.println(correo);%>
                 </button>
                 <div class="dropdown-content">
-                    <a href="CerrarSesion"><i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar Sesión</a>
+                    <a href="CerrarSesion" onclick="cerrarSesion()"><i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar Sesión</a>
                 </div>
             </div>
 
@@ -83,6 +113,15 @@
             <img src="IMG/secretarialogo.png" alt="Logo secretaria de salud" class="logo-secretaria">
         </footer>
 
+        <script>
+            // JavaScript para cerrar sesión en el frontend
+            function cerrarSesion() {
+                // Eliminar el token JWT del almacenamiento local
+                localStorage.removeItem('token');
+                // Redireccionar a la página de inicio
+                window.location.href = 'index.jsp';
+            }
+        </script>
         <script>
             // Función para abrir el modal
             function abrirModal() {

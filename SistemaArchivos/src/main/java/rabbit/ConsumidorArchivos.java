@@ -28,7 +28,7 @@ import modelo.Expediente;
  */
 public class ConsumidorArchivos {
 
-    private static final String EXCHANGE_NAME = "expedientes";
+    private static final String EXCHANGE_NAME = "archivos";
 
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();

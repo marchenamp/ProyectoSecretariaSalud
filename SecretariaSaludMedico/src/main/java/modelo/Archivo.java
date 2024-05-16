@@ -4,27 +4,55 @@
  */
 package modelo;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  *
  * @author march
  */
 public class Archivo {
-    
+
     private int id;
     private int idExpediente;
     private String nombre;
     private String tipo;
-    private byte[] contenido; 
+    private byte[] contenido;
 
-    public Archivo(int id, int idExpediente, String nombre, String tipo, byte[] contenido) {
+    public Archivo(int id, int idExpediente, String nombre, String tipo, InputStream contenidoStream) throws IOException {
         this.id = id;
         this.idExpediente = idExpediente;
         this.nombre = nombre;
         this.tipo = tipo;
-        this.contenido = contenido;
+        this.contenido = convertirInputStreamABytes(contenidoStream);
+    }
+
+    public Archivo(int idExpediente, String nombre, String tipo, InputStream contenidoStream) throws IOException {
+        this.idExpediente = idExpediente;
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.contenido = convertirInputStreamABytes(contenidoStream);
     }
 
     public Archivo() {
+    }
+
+    private byte[] convertirInputStreamABytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        return outputStream.toByteArray();
+    }
+
+    public InputStream getContenidoStream() {
+        return new ByteArrayInputStream(contenido);
     }
 
     public int getIdExpediente() {
@@ -66,5 +94,5 @@ public class Archivo {
     public void setId(int id) {
         this.id = id;
     }
-    
+
 }

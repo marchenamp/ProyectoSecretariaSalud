@@ -4,6 +4,8 @@
  */
 package controlador;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import modelo.Paciente;
 
 /**
@@ -34,7 +37,6 @@ public class IniciarSesion extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
 
         String correo = request.getParameter("correo");
         String password = request.getParameter("password");
@@ -43,13 +45,26 @@ public class IniciarSesion extends HttpServlet {
 
         if (sql.autenticacion(correo, password)) {
             Paciente paciente = sql.obtenerPacientePorCorreo(correo, password);
+
+            // Generar token JWT
+            String token = Jwts.builder()
+                    .setSubject(correo)
+                    .claim("correo", paciente.getCorreo())
+                    .claim("nombres", paciente.getNombres())
+                    .claim("id", paciente.getId())
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + 300000)) // 5 minutos de validez
+                    .signWith(SignatureAlgorithm.HS512, "2bb80a5ff92fefff0d3fc3e46fd8f5e2a63d78377757c713f4a3e6e11e78c9a5a553891de4f598a6f0f6a2854e23bcb8b286e069e7c5d7d60c03441c0e285383") // Cambia "claveSecreta" por tu propia clave secreta
+                    .compact();
             
-            HttpSession objSesion;
-            objSesion = request.getSession(true);
-            objSesion.setAttribute("correo", correo);
-            objSesion.setAttribute("nombres", paciente.getNombres());
-            objSesion.setAttribute("id", String.valueOf(paciente.getId()));
-            response.sendRedirect("menuPaciente.jsp");
+            
+            // Establecer el token en una sesión para acceder desde el JSP
+            HttpSession session = request.getSession();
+            session.setAttribute("token", token);
+
+            // Redirigir al usuario al menúPaciente.jsp
+            RequestDispatcher rd = request.getRequestDispatcher("menuPaciente.jsp");
+            rd.forward(request, response);
         } else {
             request.setAttribute("txt-advertencia", "Credenciales incorrectas");
             RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
